@@ -1,0 +1,35 @@
+services:
+  backend:
+    build: ./backend
+    container_name: pet-project-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    volumes:
+      - ./firebase_key.json:/app/serviceAccountKey.json
+
+  frontend:
+    build:
+      context: ./frontend
+      # --- ДОБАВЬТЕ ЭТОТ БЛОК 'args' ---
+      args:
+        - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
+        - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
+        - NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
+        - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
+        - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
+        - NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_APP_ID}
+        - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+    container_name: pet-project-frontend
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./frontend/.env.local
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://backend:8000
+      - FIREBASE_SERVICE_ACCOUNT_PATH=/app/serviceAccountKey.json
+    volumes:
+      - ./firebase_key.json:/app/serviceAccountKey.json
+    depends_on:
+      - backend
