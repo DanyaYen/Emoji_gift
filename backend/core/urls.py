@@ -7,4 +7,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', hello_world, name='hello'),
     path('api/', include('api.urls')),
+    path('metrics/', include('django_prometheus.urls')),
 ]
