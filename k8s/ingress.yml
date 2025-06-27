@@ -1,0 +1,30 @@
+# k8s/ingress.yml (УПРОЩЕННАЯ ВЕРСИЯ ДЛЯ ТЕСТА)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: main-ingress
+  annotations:
+    # Эта аннотация указывает, что NGINX должен передавать путь "как есть"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx # Явно указываем класс Ingress
+  rules:
+    - host: localhost
+      http:
+        paths:
+          # Правило №1: все, что начинается с /api, идет на бэкенд
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 8000
+          # Правило №2: все остальное идет на фронтенд
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 3000

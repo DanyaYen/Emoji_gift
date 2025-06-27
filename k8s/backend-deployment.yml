@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend-container
+          image: mtnlmptnss/pet-project-backend:latest
+          ports:
+            - containerPort: 8000
+
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+
+          env:
+            - name: FIREBASE_CRED_PATH
+              value: /etc/firebase/firebase_key.json
+          volumeMounts:
+            - name: firebase-key-volume
+              mountPath: /etc/firebase
+              readOnly: true
+      volumes:
+        - name: firebase-key-volume
+          secret:
+            secretName: firebase-secret

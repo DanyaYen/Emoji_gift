@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend-container
+          image: mtnlmptnss/pet-project-frontend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_BASE_URL
+              value: http://backend-service:8000
+            - name: FIREBASE_SERVICE_ACCOUNT_PATH
+              value: /etc/firebase/firebase_key.json
+          volumeMounts:
+            - name: firebase-key-volume
+              mountPath: /etc/firebase
+              readOnly: true
+      volumes:
+        - name: firebase-key-volume
+          secret:
+            secretName: firebase-secret
